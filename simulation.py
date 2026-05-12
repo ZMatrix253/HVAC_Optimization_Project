@@ -1,4 +1,3 @@
-# simulation.py
 import numpy as np
 
 def simulate_hvac(components, hourly_load):
@@ -6,7 +5,7 @@ def simulate_hvac(components, hourly_load):
     Simulate HVAC system energy and CO2 emissions.
     
     components: list of HVACComponent objects
-    hourly_load: numpy array of hourly load factors
+    hourly_load: numpy array of hourly load factors (0-1)
     """
     total_energy = np.zeros_like(hourly_load)
     total_co2 = np.zeros_like(hourly_load)
@@ -18,39 +17,41 @@ def simulate_hvac(components, hourly_load):
     
     return total_energy, total_co2
 
+
 def generate_hourly_load(days=365):
     """
-    Generates a realistic hourly HVAC load profile for Ottawa, Canada.
-    - Peak cooling in mid-July (summer)
-    - Higher heating demand in winter
+    Generates separate heating and cooling loads for Ottawa, Canada.
+    Returns total_load for compatibility with current main.py
     """
     import numpy as np
     
     hours = days * 24
     hour_of_year = np.arange(hours)
+    hour_of_day = hour_of_year % 24
+    day_of_year = hour_of_year / 24.0
+
+    # Daily variation (higher during business hours)
+    daily_variation = 0.75 + 0.45 * np.sin(2 * np.pi * (hour_of_day - 8) / 24)
+
+    # Realistic Ottawa temperature profile
+    base_temp = 8.5 + 13.0 * np.sin(2 * np.pi * (day_of_year - 196) / 365)
+    temp = base_temp + 6.0 * np.sin(2 * np.pi * hour_of_day / 24)
+
+    # ================== SEPARATE LOADS ==================
+    # Cooling load (dominant in summer)
+    cooling_load = np.maximum(0.0, (temp - 18.0) * 0.055)
     
-    # Daily variation (higher during daytime)
-    daily_variation = 0.8 + 0.4 * np.sin(2 * np.pi * (hour_of_year % 24) / 24 - np.pi/2)
-    
-    # Seasonal variation - More realistic for Ottawa
-    # Peak cooling around day 200 (mid-July)
-    day_of_year = hour_of_year / 24
-    seasonal_cooling = np.sin(2 * np.pi * (day_of_year - 200) / 365)   # Peak in summer
-    
-    # Cooling load is stronger in summer
-    cooling_factor = 0.6 + 0.8 * np.maximum(0, seasonal_cooling)
-    
-    # Heating load is stronger in winter (inverse of cooling)
-    heating_factor = 0.6 + 0.7 * np.maximum(0, -seasonal_cooling)
-    
-    # Combine both (total HVAC load)
-    total_load = daily_variation * (cooling_factor * 0.7 + heating_factor * 0.6)
-    
-    # Add some random noise for realism
-    noise = 1 + 0.08 * np.random.randn(hours)
+    # Heating load (dominant in winter)
+    heating_load = np.maximum(0.0, (15.0 - temp) * 0.048)
+
+    # Total HVAC load factor (for current main.py compatibility)
+    total_load = daily_variation * (cooling_load * 1.25 + heating_load * 1.05 + 0.35)
+
+    # Add realism noise
+    noise = 1.0 + 0.07 * np.random.normal(0, 1, hours)
     total_load = total_load * noise
-    
-    # Normalize so average load factor is reasonable (~0.6-0.7)
-    total_load = total_load / total_load.mean() * 0.65
-    
+
+    # Normalize to reasonable average
+    total_load = np.clip(total_load / total_load.mean() * 0.68, 0.1, 1.3)
+
     return total_load

@@ -1,4 +1,3 @@
-source venv/bin/activate# hvac_components.py
 class HVACComponent:
     def __init__(self, name, power_kw, co2_factor=0.0005):
         """

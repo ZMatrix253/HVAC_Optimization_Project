@@ -1,39 +1,42 @@
 # HVAC System Optimization & Energy Simulation Tool
 
-**Advanced Python framework** for modeling annual HVAC energy consumption, costs, and CO₂ emissions in a commercial building. Performs scenario analysis, sensitivity studies, Monte Carlo uncertainty quantification, and parametric optimization.
+**Python-based framework** for modeling annual HVAC energy consumption, operating costs, and CO₂ emissions for a commercial building in Ottawa, Canada.
 
-This project showcases strong simulation, data analysis, and engineering decision-making skills — highly relevant for mechanical, energy, and systems engineering roles.
+This project demonstrates practical **systems engineering**, **climate-responsive simulation**, and **data-driven optimization** skills — ideal for Mechanical, Energy, Building Systems, or Simulation Engineering roles.
 
 ![Hourly Energy Consumption](results/hourly_energy.png)
 ![Savings Comparison](results/savings_comparison.png)
 
 ## Key Features
-- Realistic Ottawa climate load profile (temperature-dependent heating & cooling)
+- Realistic Ottawa climate load profile (monthly temperature interpolation + daily business-hour variation)
 - Modular HVAC component modeling with part-load efficiency curves
-- 6 realistic upgrade scenarios (including LED retrofit, Economizer + DCV)
-- Sensitivity Analysis (electricity price, investment cost, climate)
-- Monte Carlo simulation (5000 runs) for uncertainty quantification
-- Parametric optimization using SciPy
+- 6 practical upgrade scenarios
+- Sensitivity analysis, Monte Carlo uncertainty (5,000 runs), and SciPy parametric optimization
 - Automated professional PDF report generation
 
 ## Technologies
-- Python 3, NumPy, Pandas, Matplotlib, SciPy
-- Object-oriented design + modular architecture
+- Python 3
+- NumPy, Pandas, Matplotlib, SciPy
+- Object-oriented modular design
 
 ## Results Summary (Latest Run)
 
-| Scenario                    | Annual Energy (kWh) | Annual Cost ($) | Savings (kWh) | Savings ($) | ROI (years) | CO₂ Reduction (tons) |
-|-----------------------------|---------------------|-----------------|---------------|-------------|-------------|----------------------|
-| **Baseline**                | 358,722             | 43,047          | -             | -           | -           | -                    |
-| VFD Fans & Pumps            | 347,334             | 41,680          | 11,388        | 1,367       | 36.6        | 5.7                  |
-| **Combined Measures**       | **273,312**         | **32,797**      | **85,410**    | **10,249**  | **4.9**     | **42.7**             |
+| Scenario                    | Annual Energy (kWh) | Cost Savings ($) | Energy Savings (kWh) | Savings % | ROI (years) | CO₂ Reduction (tons) |
+|-----------------------------|---------------------|------------------|----------------------|-----------|-------------|----------------------|
+| **Baseline**                | 662,256             | -                | -                    | -         | -           | -                    |
+| VFD Fans & Pumps            | 646,488             | 1,892            | 15,768               | 2.4%      | 26.4        | 7.9                  |
+| Thermostat Optimization     | 623,362             | 4,667            | 38,894               | 5.9%      | 10.7        | 19.4                 |
+| **High Efficiency Chiller** | **609,696**         | **6,307**        | **52,560**           | **7.9%**  | **7.9**     | **26.3**             |
+| LED Lighting Retrofit       | 623,362             | 4,415            | 38,894               | 5.9%      | 11.3        | 18.4                 |
+| Economizer + DCV            | 625,990             | 4,351            | 36,266               | 5.5%      | 11.5        | 18.1                 |
+| **Combined Measures**       | **537,163**         | **15,011**       | **125,093**          | **18.9%** | **3.3**     | **62.5**             |
 
-**Best performer**: Combined Measures delivers ~23.8% energy reduction with strong ROI.
+**Best performer**: Combined Measures delivers strong ~19% energy reduction with excellent ROI.
 
 ## Advanced Analysis
-- **Sensitivity Analysis**: Savings highly sensitive to electricity price and investment cost
-- **Monte Carlo (5000 runs)**: Mean ROI 5.2 years | 94.3% probability ROI < 8 years
-- **Parametric Optimization**: SciPy found optimal configuration saving extra ~$9,840/year vs manual Combined Measures
+- **Sensitivity Analysis**: Strong correlation between electricity price, investment cost, and overall savings
+- **Monte Carlo (5,000 runs)**: Mean ROI 3.5 years with very high probability of positive outcomes
+- **Parametric Optimization**: SciPy identified further improvements beyond manual scenarios
 
 ## Getting Started
 
@@ -42,7 +45,8 @@ git clone https://github.com/ZMatrix253/HVAC_Optimization_Project.git
 cd HVAC_Optimization_Project
 
 python3 -m venv venv
-source venv/bin/activate        # macOS
+source venv/bin/activate        # macOS / Linux
+
 pip install numpy pandas matplotlib scipy
 
 python main.py

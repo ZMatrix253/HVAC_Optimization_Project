@@ -18,30 +18,23 @@ class HVACComponent:
         
         # Part-load efficiency curves (realistic for modern equipment)
         if "Chiller" in name:
-            self.base_efficiency = 0.85                   # Peak efficiency / COP equivalent
-            self.part_load_curve = lambda plr: max(0.40, 0.95 * plr**0.8 - 0.15 * (1 - plr)**2)
+            self.base_efficiency = 0.85
+            self.part_load_curve = lambda plr: np.maximum(0.40, 0.95 * plr**0.8 - 0.15 * (1 - plr)**2)
         elif "Boiler" in name:
             self.base_efficiency = 0.88
-            self.part_load_curve = lambda plr: max(0.50, 0.92 * plr**0.75)
+            self.part_load_curve = lambda plr: np.maximum(0.50, 0.92 * plr**0.75)
         elif "Lighting" in name:
             self.base_efficiency = 0.95
-            self.part_load_curve = lambda plr: 0.98       # Lighting is almost constant efficiency
+            self.part_load_curve = lambda plr: np.full_like(plr, 0.98)   # <-- fixed
         else:  # Fans, Pumps
             self.base_efficiency = 0.75
-            self.part_load_curve = lambda plr: max(0.45, 0.85 * plr**1.1)
+            self.part_load_curve = lambda plr: np.maximum(0.45, 0.85 * plr**1.1)
 
+            
     def energy_consumed(self, load_factor: np.ndarray):
-        """
-        Calculate energy consumed and CO2 emissions.
-        load_factor: array of hourly values between 0.0 and 1.0
-        Returns: (energy_kwh, co2_tonnes)
-        """
-        plr = np.clip(load_factor, 0.0, 1.0)
-        
-        efficiency = self.base_efficiency * self.part_load_curve(plr)
-        power_draw_kw = (self.nominal_power_kw / efficiency) * plr
-        
-        energy_kwh = power_draw_kw                     # since it's hourly
+        """Direct scaling - ALLOW load_factor > 1.0 for higher peaks"""
+        plr = load_factor                    # ← No clip to 1.0
+        power_draw = self.nominal_power_kw * plr
+        energy_kwh = power_draw
         co2_tonnes = energy_kwh * self.co2_factor
-        
         return energy_kwh, co2_tonnes

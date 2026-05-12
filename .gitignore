@@ -1,5 +1,7 @@
 __pycache__/
 *.pyc
+*.pyo
 .DS_Store
 venv/
-.DS_Store
+results/__pycache__/
+.vscode/

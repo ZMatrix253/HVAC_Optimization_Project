@@ -1,3 +1,5 @@
+from hvac_components import HVACComponent
+
 def apply_scenario(components, scenario):
     """
     Apply optimization scenario by updating component power ratings.

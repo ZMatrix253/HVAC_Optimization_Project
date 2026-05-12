@@ -1,37 +1,40 @@
 # HVAC System Optimization & Energy Simulation Tool
 
-**Python simulation framework** that models annual HVAC energy consumption, cost, and CO₂ emissions for a commercial building and evaluates multiple efficiency upgrade scenarios.
+**Python-based simulation framework** that models annual HVAC energy consumption, cost, and CO₂ emissions for a commercial building. Evaluates the impact of common efficiency upgrades and calculates potential savings and ROI.
 
-Demonstrates practical engineering optimization: comparing baseline HVAC performance against VFDs, thermostat tuning, high-efficiency equipment, and combined measures.
+This project demonstrates practical mechanical engineering + simulation skills: building modular system models, generating realistic load profiles, running scenario analysis, and visualizing results.
 
-![Hourly Energy Plot](results/hourly_energy.png)
+![Hourly Energy Consumption](results/hourly_energy.png)
+![Savings Comparison](results/savings_comparison.png)
 
 ## Features
-- Realistic hourly load profile generation (daily + seasonal variation)
-- Modular HVAC component modeling
-- Baseline vs. scenario comparison
-- Energy, cost, and CO₂ savings calculation
+- Realistic hourly HVAC load profile (daily + seasonal variation for Ottawa climate)
+- Modular component-based modeling (Chiller, Boiler, Fans, Pumps)
+- Baseline vs. multiple upgrade scenarios
+- Energy, operating cost, and CO₂ emissions calculation
 - Simple ROI (payback period) analysis
 - Automated Matplotlib visualizations
 
 ## Technologies
-- Python 3
+- **Python 3**
 - NumPy, Pandas, Matplotlib
 - Object-oriented design
 
-## Key Results (Example Run)
-| Scenario                  | Annual Energy (kWh) | Savings (kWh) | Savings ($) | ROI (years) |
-|---------------------------|---------------------|---------------|-------------|-------------|
-| Baseline                  | ~1,314,000         | -             | -           | -           |
-| VFD Fans & Pumps          | ...                | Moderate      | ...         | ...         |
-| Combined Measures         | Lowest             | Highest       | Best        | ~4–6 years  |
+## Results (Latest Run)
 
-*(Actual numbers appear when you run `main.py`)*
+| Scenario                    | Annual Energy (kWh) | Annual Cost ($) | Savings (kWh) | Savings ($) | ROI (years) | CO₂ Reduction (tons) |
+|-----------------------------|---------------------|-----------------|---------------|-------------|-------------|----------------------|
+| **Baseline**                | 313,170             | 37,580          | -             | -           | -           | -                    |
+| VFD Fans & Pumps            | 301,782             | 36,214          | 11,388        | 1,367       | 36.6        | 5.7                  |
+| Thermostat Optimization     | 284,700             | 34,164          | 28,470        | 3,416       | 14.6        | 14.2                 |
+| High Efficiency Chiller     | 279,006             | 33,481          | 34,164        | 4,100       | 12.2        | 17.1                 |
+| **Combined Measures**       | **256,230**         | **30,748**      | **56,940**    | **6,833**   | **7.3**     | **28.5**             |
+
+*Assumes $50,000 investment cost for ROI calculations. Results generated from `main.py`.*
 
 ## Getting Started
 
-### 1. Clone & Install
+### 1. Clone the repository
 ```bash
 git clone https://github.com/ZMatrix253/HVAC_Optimization_Project.git
 cd HVAC_Optimization_Project
-pip install numpy pandas matplotlib

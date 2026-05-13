@@ -1,0 +1,42 @@
+# =============================================
+# HVAC Optimization Project Configuration
+# =============================================
+
+weather:
+  epw_path: "data/CAN_ON_Ottawa.CDA.RCS.710630_TMYx.2011-2025.epw"
+  target_year: null        # null = use full TMYx (recommended)
+
+building:
+  heating_setpoint: 18.0
+  cooling_setpoint: 24.0
+  heating_sensitivity: 1.2
+  cooling_sensitivity: 1.1
+  solar_factor: 0.012
+  internal_load_kW: 12.0
+  area_m2: 2000.0
+  load_normalization_factor: 1.25
+
+constants:
+  electricity_cost_kwh: 0.12           # CAD per kWh
+  co2_factor_kg_per_kwh: 0.028         # Ontario grid intensity (very clean)
+  project_lifetime_years: 15
+  discount_rate: 0.05
+
+scenarios:
+  baseline:
+    description: "Standard operation - no optimization"
+    chiller_efficiency_improvement: 0.0
+    setpoint_adjustment: 0.0
+    night_setback: false
+
+  optimized:
+    description: "Full optimization: better chiller + smart setbacks"
+    chiller_efficiency_improvement: 0.15
+    setpoint_adjustment: 1.0
+    night_setback: true
+
+  aggressive:
+    description: "Aggressive energy saving scenario"
+    chiller_efficiency_improvement: 0.25
+    setpoint_adjustment: 2.0
+    night_setback: true

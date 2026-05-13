@@ -1,7 +1,8 @@
 import numpy as np
 import pandas as pd
 from hvac_components import HVACComponent
-from simulation import simulate_hvac, generate_hourly_load
+from simulation import simulate_hvac
+from weather import load_from_epw                    # ← Added
 from optimization import apply_scenario, calculate_roi
 from visualization import plot_hourly_energy, plot_savings
 
@@ -13,9 +14,11 @@ CO2_GRID_FACTOR = 0.0005     # tonnes CO2 per kWh (Ontario grid average)
 print("Starting HVAC System Optimization Simulation...\n")
 
 # -----------------------------
-# Generate hourly load profile
+# Load REAL weather data from EPW   ← CHANGED
 # -----------------------------
-hourly_load = generate_hourly_load()
+hourly_load, _ = load_from_epw(
+    epw_path="data/CAN_ON_Ottawa.CDA.RCS.710630_TMYx.2011-2025.epw"
+)
 
 # -----------------------------
 # Define baseline HVAC components
@@ -124,7 +127,8 @@ for increase in [0, 10, 20, 30]:
     climate_roi = INVESTMENT_COST / climate_savings if climate_savings > 0 else float('inf')
     print(f"+{increase}% cooling demand → Savings: ${climate_savings:,.0f} | ROI: {climate_roi:.1f} years")
 
-    # ===================================================================
+
+# ===================================================================
 # MONTE CARLO SIMULATION - Uncertainty Analysis
 # ===================================================================
 print("\n" + "="*70)
@@ -174,6 +178,7 @@ print(f"Mean ROI               : {df_mc['ROI (years)'].mean():.1f} years")
 print(f"95% Confidence Interval for ROI: "
       f"{np.percentile(df_mc['ROI (years)'], 2.5):.1f} - "
       f"{np.percentile(df_mc['ROI (years)'], 97.5):.1f} years")
+
 
 # ===================================================================
 # PARAMETRIC OPTIMIZATION USING SCIPY
@@ -228,6 +233,7 @@ for component, power in optimal_powers.items():
 
 # Compare with Combined Measures
 print(f"\nCompared to 'Combined Measures' (${30_748:,.0f}), optimization saves an extra ${result.fun - 30_748:,.0f}/year")
+
 
 # ===================================================================
 # PDF REPORT GENERATION (Improved)

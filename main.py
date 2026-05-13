@@ -40,6 +40,18 @@ baseline_cost = np.sum(baseline_energy) * ELECTRICITY_COST
 print(f"Baseline annual energy: {np.sum(baseline_energy):,.0f} kWh")
 print(f"Baseline annual cost: ${baseline_cost:,.2f}\n")
 
+
+# === DIAGNOSTICS FOR PLOT 1 ===
+print(f"\n=== Baseline Power Statistics ===")
+print(f"Min  Power : {baseline_energy.min():.2f} kW")
+print(f"Mean Power : {baseline_energy.mean():.2f} kW")
+print(f"Max  Power : {baseline_energy.max():.2f} kW")
+print(f"Load Factor Range: {hourly_load.min():.3f} — {hourly_load.max():.3f}x")
+
+# Check how many hours are very low
+low_hours = np.sum(baseline_energy < 20)   # arbitrary threshold
+print(f"Hours below 20 kW: {low_hours} ({low_hours/8760*100:.1f}%)")
+
 # -----------------------------
 # Realistic & Believable Scenarios
 # -----------------------------
@@ -191,9 +203,16 @@ from scipy.optimize import minimize
 
 # Define variables to optimize (reduction factors for each component)
 # Order: [Chiller, Boiler, Fans, Pumps, Lighting]
-initial_guess = [0.8, 0.85, 0.8, 0.8, 0.4]   # starting reduction ratios
+initial_guess = [0.90, 0.92, 0.85, 0.88, 0.50]
 
-bounds = [(0.5, 1.0), (0.6, 1.0), (0.5, 1.0), (0.5, 1.0), (0.2, 1.0)]  # realistic limits
+# Realistic reduction limits
+bounds = [
+    (0.75, 1.0),   # Chiller: max 25% improvement
+    (0.80, 1.0),   # Boiler: max 20%
+    (0.65, 1.0),   # Fans: max 35% (VFDs are good)
+    (0.70, 1.0),   # Pumps
+    (0.40, 1.0)    # Lighting: max 60% (LED retrofit)
+]
 
 def objective(x):
     """Minimize total annual cost"""
@@ -299,6 +318,31 @@ Parametric Optimization found even better configuration saving an extra ~${9_840
         pdf.savefig(fig)
         plt.close()
 
+    # Inside the with PdfPages(...) block, after the other plots:
+
+    # 4. Part-Load Analysis
+    fig = plt.figure(figsize=(12, 6))
+    # Re-create the before/after plot or load the image
+    plt.plot(baseline_energy, label="With Realistic Part-Load Curves", linewidth=2.2)
+    plt.title("Impact of Part-Load Curves on Baseline Energy")
+    plt.xlabel("Hour of Year")
+    plt.ylabel("Power (kW)")
+    plt.legend()
+    plt.grid(True, alpha=0.3)
+    pdf.savefig(fig)
+    plt.close()
+
+    # 5. Part-Load Curves Grid
+    fig, axes = plt.subplots(2, 3, figsize=(15, 8))
+    axes = axes.flatten()
+    for i, comp in enumerate(components):
+        comp.plot_part_load_curve(ax=axes[i])
+    for j in range(len(components), len(axes)):
+        axes[j].axis('off')
+    plt.tight_layout()
+    pdf.savefig(fig)
+    plt.close()
+
 print(f"✅ Professional PDF Report saved as: {report_filename}")
 
 # ================== DEBUG: SAMPLE EVERY 1000 HOURS ==================
@@ -319,3 +363,52 @@ for i, name in enumerate(scenarios.keys()):
 print(debug_data.round(1))
 debug_data.round(1).to_csv('results/hourly_debug_sample.csv', index=False)
 print("\nFull debug table saved to: results/hourly_debug_sample.csv")
+
+# ===================== PART-LOAD CURVES VISUALIZATION =====================
+print("\nGenerating Part-Load Efficiency Curves...")
+
+import matplotlib.pyplot as plt
+
+fig, axes = plt.subplots(2, 3, figsize=(15, 8))
+axes = axes.flatten()
+
+for i, comp in enumerate(components):
+    comp.plot_part_load_curve(ax=axes[i])
+
+for j in range(len(components), len(axes)):
+    axes[j].axis('off')
+
+plt.tight_layout()
+plt.savefig("results/part_load_curves.png", dpi=300, bbox_inches='tight')
+print("✅ Saved: results/part_load_curves.png")
+plt.show()
+
+   # ===================== BEFORE vs AFTER PART-LOAD COMPARISON =====================
+print("\nCreating Before vs After Part-Load Comparison...")
+
+baseline_old = np.zeros_like(hourly_load)
+
+for comp in components:
+    linear_comp = HVACComponent(comp.name, comp.nominal_power_kw, comp.co2_factor)
+    linear_comp.part_load_curve = lambda plr: np.ones_like(plr)   # Force linear (100% efficiency)
+    
+    energy, _ = linear_comp.energy_consumed(hourly_load)
+    baseline_old += energy
+
+plt.figure(figsize=(12, 6))
+plt.plot(baseline_energy, label="With Realistic Part-Load Curves", linewidth=2.2)
+plt.plot(baseline_old, label="Linear Model (Old Method)", linewidth=2, alpha=0.75)
+plt.title("Impact of Part-Load Curves on Baseline Annual Energy Profile", fontsize=14, fontweight='bold')
+plt.xlabel("Hour of Year")
+plt.ylabel("Total HVAC Power (kW)")
+plt.legend(fontsize=12)
+plt.grid(True, alpha=0.3)
+plt.tight_layout()
+
+plt.savefig("results/partload_impact.png", dpi=300, bbox_inches='tight')
+print("✅ Saved: results/partload_impact.png")
+
+# Non-blocking show + close
+plt.show(block=False)
+plt.pause(2)      # Show for 2 seconds
+plt.close()

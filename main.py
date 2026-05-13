@@ -255,7 +255,7 @@ print(f"\nCompared to 'Combined Measures' (${30_748:,.0f}), optimization saves a
 
 
 # ===================================================================
-# PDF REPORT GENERATION (Improved)
+# PDF REPORT GENERATION (Improved & Dynamic)
 # ===================================================================
 print("\n" + "="*60)
 print("GENERATING PROFESSIONAL PDF REPORT")
@@ -268,71 +268,65 @@ from datetime import datetime
 report_filename = "results/HVAC_Optimization_Report.pdf"
 
 with PdfPages(report_filename) as pdf:
-    # 1. Title Page
-    fig = plt.figure(figsize=(11, 8))
+    # ====================== 1. Title Page ======================
+    fig = plt.figure(figsize=(11, 8.5))
     plt.axis('off')
-    plt.text(0.5, 0.9, "HVAC System Optimization Report", fontsize=22, ha='center', fontweight='bold')
-    plt.text(0.5, 0.75, "Ottawa Commercial Building Case Study", fontsize=14, ha='center')
-    plt.text(0.5, 0.65, f"Generated: {datetime.now().strftime('%B %d, %Y')}", fontsize=12, ha='center')
-    plt.text(0.5, 0.4, "Zoltan Marton\nSimulation & Systems Engineer", fontsize=12, ha='center')
-    pdf.savefig(fig)
+    plt.text(0.5, 0.92, "HVAC System Optimization Report", fontsize=24, ha='center', fontweight='bold')
+    plt.text(0.5, 0.82, "Ottawa Commercial Building Case Study", fontsize=16, ha='center')
+    plt.text(0.5, 0.72, f"Generated: {datetime.now().strftime('%B %d, %Y')}", fontsize=12, ha='center')
+    plt.text(0.5, 0.45, "ZMatrix253\nHVAC Optimization Project", fontsize=13, ha='center', style='italic')
+    plt.text(0.5, 0.35, "Realistic TMYx Weather • Part-Load Curves • Monte Carlo Analysis", fontsize=11, ha='center')
+    pdf.savefig(fig, dpi=300)
     plt.close()
 
-    # 2. Executive Summary
-    fig = plt.figure(figsize=(11, 8))
+    # ====================== 2. Executive Summary ======================
+    fig = plt.figure(figsize=(11, 8.5))
     plt.axis('off')
-    plt.text(0.1, 0.95, "Executive Summary", fontsize=16, fontweight='bold')
-    summary = f"""
-Baseline Annual Energy      : {np.sum(baseline_energy):,.0f} kWh
-Baseline Annual Cost        : ${baseline_cost:,.2f}
+    plt.text(0.1, 0.96, "Executive Summary", fontsize=18, fontweight='bold')
 
-Best Scenario: Combined Measures
-    • Energy Reduction      : {85_410:,.0f} kWh ({85_410/np.sum(baseline_energy)*100:.1f}%)
-    • Cost Savings          : ${10_249:,.2f}
-    • Payback Period        : 4.9 years
-    • CO₂ Reduction         : 42.7 tonnes
+    # Get Combined Measures results dynamically
+    combined = df_results[df_results['Scenario'] == "Combined Measures"].iloc[0]
+    baseline_energy_total = np.sum(baseline_energy)
+    savings_percent = (combined['Savings Energy (kWh)'] / baseline_energy_total) * 100
 
-Parametric Optimization found even better configuration saving an extra ~${9_840:,.0f}/year.
-    """
-    plt.text(0.1, 0.8, summary, fontsize=11, va='top', fontfamily='monospace')
-    pdf.savefig(fig)
+    summary_text = f"""
+Baseline Performance
+    Annual Energy Consumption : {baseline_energy_total:,.0f} kWh
+    Annual Operating Cost      : ${baseline_cost:,.2f}
+
+Best Scenario — Combined Measures
+    Annual Energy              : {combined['Annual Energy (kWh)']:,.0f} kWh
+    Energy Reduction           : {combined['Savings Energy (kWh)']:,.0f} kWh ({savings_percent:.1f}%)
+    Cost Savings               : ${combined['Savings Cost ($)']:,.2f}
+    Payback Period             : {combined['ROI (years)']:.1f} years
+    CO₂ Reduction              : {combined['CO2 Reduction (tons)']:.1f} tonnes
+
+Parametric Optimization (SciPy)
+    Additional Annual Savings  : ${result.fun - combined['Annual Cost ($)']:,.0f}
+    Minimum Annual Cost Found  : ${result.fun:,.2f}
+
+Monte Carlo Analysis (5,000 runs)
+    Mean ROI                   : {df_mc['ROI (years)'].mean():.1f} years
+    95% Confidence Interval    : {np.percentile(df_mc['ROI (years)'], 2.5):.1f} – {np.percentile(df_mc['ROI (years)'], 97.5):.1f} years
+    Probability of ROI < 8 yrs : {prob_roi_under_8:.1f}%
+"""
+
+    plt.text(0.1, 0.88, summary_text, fontsize=11.5, va='top', fontfamily='monospace', linespacing=1.6)
+    pdf.savefig(fig, dpi=300)
     plt.close()
 
-    # 3. Main Plots
+    # ====================== 3. Main Plots ======================
+    # Hourly Energy Plot
     plot_hourly_energy(baseline_energy, hourly_scenarios, list(scenarios.keys()))
-    pdf.savefig(plt.gcf())
+    pdf.savefig(plt.gcf(), dpi=300)
     plt.close()
 
+    # Savings Comparison Plot
     plot_savings(df_results)
-    pdf.savefig(plt.gcf())
+    pdf.savefig(plt.gcf(), dpi=300)
     plt.close()
 
-    # 4. Monte Carlo Distribution
-    if 'df_mc' in locals():
-        fig = plt.figure(figsize=(10, 6))
-        plt.hist(df_mc['ROI (years)'], bins=30, alpha=0.8, color='skyblue', edgecolor='black')
-        plt.title("Monte Carlo Simulation - ROI Distribution (5000 runs)")
-        plt.xlabel("ROI (years)")
-        plt.ylabel("Frequency")
-        plt.grid(True, alpha=0.3)
-        pdf.savefig(fig)
-        plt.close()
-
-    # Inside the with PdfPages(...) block, after the other plots:
-
-    # 4. Part-Load Analysis
-    fig = plt.figure(figsize=(12, 6))
-    # Re-create the before/after plot or load the image
-    plt.plot(baseline_energy, label="With Realistic Part-Load Curves", linewidth=2.2)
-    plt.title("Impact of Part-Load Curves on Baseline Energy")
-    plt.xlabel("Hour of Year")
-    plt.ylabel("Power (kW)")
-    plt.legend()
-    plt.grid(True, alpha=0.3)
-    pdf.savefig(fig)
-    plt.close()
-
-    # 5. Part-Load Curves Grid
+    # ====================== 4. Part-Load Curves ======================
     fig, axes = plt.subplots(2, 3, figsize=(15, 8))
     axes = axes.flatten()
     for i, comp in enumerate(components):
@@ -340,10 +334,35 @@ Parametric Optimization found even better configuration saving an extra ~${9_840
     for j in range(len(components), len(axes)):
         axes[j].axis('off')
     plt.tight_layout()
-    pdf.savefig(fig)
+    pdf.savefig(fig, dpi=300)
     plt.close()
 
-print(f"✅ Professional PDF Report saved as: {report_filename}")
+    # ====================== 5. Monte Carlo Distribution ======================
+    fig = plt.figure(figsize=(10, 6))
+    plt.hist(df_mc['ROI (years)'], bins=30, alpha=0.85, color='steelblue', edgecolor='black')
+    plt.title("Monte Carlo Simulation — ROI Distribution (5,000 runs)", fontsize=14, fontweight='bold')
+    plt.xlabel("ROI (years)")
+    plt.ylabel("Frequency")
+    plt.grid(True, alpha=0.3)
+    pdf.savefig(fig, dpi=300)
+    plt.close()
+
+    # ====================== 6. Optimal Configuration ======================
+    fig = plt.figure(figsize=(11, 7))
+    plt.axis('off')
+    plt.text(0.1, 0.95, "Optimal Configuration from Parametric Optimization", fontsize=16, fontweight='bold')
+
+    opt_text = "Recommended Upgraded Component Ratings:\n\n"
+    for component, power in optimal_powers.items():
+        orig = next((c.nominal_power_kw for c in components if c.name == component), 0)
+        reduction = (1 - power/orig) * 100 if orig > 0 else 0
+        opt_text += f"    {component:12} : {power:5.1f} kW   ({reduction:5.1f}% reduction)\n"
+
+    plt.text(0.1, 0.82, opt_text, fontsize=13, va='top', fontfamily='monospace')
+    pdf.savefig(fig, dpi=300)
+    plt.close()
+
+print(f"✅ Professional PDF Report successfully generated:\n   {report_filename}")
 
 # ================== DEBUG: SAMPLE EVERY 1000 HOURS ==================
 print("\n" + "="*60)

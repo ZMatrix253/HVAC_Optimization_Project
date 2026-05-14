@@ -2,41 +2,47 @@
 # HVAC Optimization Project Configuration
 # =============================================
 
+# Weather data settings
 weather:
   epw_path: "data/CAN_ON_Ottawa.CDA.RCS.710630_TMYx.2011-2025.epw"
   target_year: null        # null = use full TMYx (recommended)
 
+# Building parameters
 building:
   heating_setpoint: 18.0
   cooling_setpoint: 24.0
-  heating_sensitivity: 1.2
+  heating_sensitivity: 1.2     # fairly aggressive - might tweak later
   cooling_sensitivity: 1.1
   solar_factor: 0.012
   internal_load_kW: 12.0
   area_m2: 2000.0
   load_normalization_factor: 1.25
 
+# General constants
 constants:
-  electricity_cost_kwh: 0.12           # CAD per kWh
-  co2_factor_kg_per_kwh: 0.028         # Ontario grid intensity (very clean)
+  electricity_cost_kwh: 0.12           # CAD per kWh - Ottawa commercial rate
+  co2_factor_kg_per_kwh: 0.028         # Ontario grid - quite clean
   project_lifetime_years: 15
   discount_rate: 0.05
 
+# Scenarios (currently not fully wired into main.py yet)
 scenarios:
   baseline:
-    description: "Standard operation - no optimization"
+    description: "Standard operation - no changes"
     chiller_efficiency_improvement: 0.0
     setpoint_adjustment: 0.0
     night_setback: false
 
   optimized:
-    description: "Full optimization: better chiller + smart setbacks"
+    description: "Good balance - better chiller + smart setbacks"
     chiller_efficiency_improvement: 0.15
     setpoint_adjustment: 1.0
     night_setback: true
 
   aggressive:
-    description: "Aggressive energy saving scenario"
+    description: "Push it harder - maximum reasonable savings"
     chiller_efficiency_improvement: 0.25
     setpoint_adjustment: 2.0
     night_setback: true
+
+# TODO: Eventually use this config file to drive main.py instead of hard-coded values

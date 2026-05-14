@@ -49,18 +49,24 @@ This is an excellent match for a first-principles physics-based model.
 - Monte Carlo simulation (5,000 runs) to quantify uncertainty in ROI
 - Parametric optimization using SciPy to find the best combination of upgrades
 
-## Limitations & Future Work
+### Limitations & Assumptions
 
-- Model is based on a generic 2000 m² commercial building archetype
-- Part-load curves are reasonable approximations based on typical equipment behavior
-- Investment costs are high-level estimates
-- Simple payback used (no full life-cycle cost analysis)
+- Simplified single-zone building model (2000 m² archetype) — does not capture multi-zone effects or detailed envelope dynamics.
+- Part-load efficiency curves are representative approximations based on manufacturer data and ASHRAE guidelines, not site-specific curves.
+- Investment costs are high-level order-of-magnitude estimates (±30–50% accuracy).
+- Economic analysis uses simple payback period (no NPV, IRR, or full LCC analysis; does not include maintenance savings, incentives, or escalations).
+- Weather data uses TMYx (typical year) — does not account for climate change or extreme weather years.
+- Ontario grid CO₂ factor is used; actual marginal emissions vary.
 
-**Future improvements**:
-- Fully config-driven scenarios from `config.yaml`
-- Interactive Streamlit dashboard
-- Support for multiple building types and climates
-- More extensive validation with additional real buildings
+
+### Future Work
+
+- Full `config.yaml` driven workflow
+- Multi-zone capability and detailed envelope modeling
+- Streamlit interactive dashboard
+- Support for additional climates and building types
+- Time-of-use tariffs and demand charge modeling
+- Expanded validation against more ASHRAE buildings
 
 ## Getting Started
 

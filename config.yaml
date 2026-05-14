@@ -11,7 +11,7 @@ weather:
 building:
   heating_setpoint: 18.0
   cooling_setpoint: 24.0
-  heating_sensitivity: 1.2     # fairly aggressive - might tweak later
+  heating_sensitivity: 1.2
   cooling_sensitivity: 1.1
   solar_factor: 0.012
   internal_load_kW: 12.0
@@ -20,13 +20,50 @@ building:
 
 # General constants
 constants:
-  electricity_cost_kwh: 0.12           # CAD per kWh - Ottawa commercial rate
-  co2_factor_kg_per_kwh: 0.028         # Ontario grid - quite clean
+  electricity_cost_kwh: 0.12
+  co2_factor_tonnes_per_kwh: 0.0005
+  investment_cost: 50000.0
   project_lifetime_years: 15
   discount_rate: 0.05
 
-# Scenarios (currently not fully wired into main.py yet)
+# Baseline HVAC components
+components:
+  baseline:
+    Chiller: 30.0
+    Boiler: 15.0
+    Fans: 5.0
+    Pumps: 5.0
+    Lighting: 8.0
+
+# Realistic retrofit scenarios - direct nominal power overrides
 scenarios:
+  "VFD Fans & Pumps":
+    Fans: 4.25
+    Pumps: 4.25
+
+  "Thermostat Optimization":
+    Chiller: 27.5
+    Boiler: 13.8
+
+  "High Efficiency Chiller":
+    Chiller: 25.0
+
+  "LED Lighting Retrofit":
+    Lighting: 4.5
+
+  "Economizer + DCV":
+    Fans: 4.4
+    Chiller: 27.5
+
+  "Combined Measures":
+    Chiller: 25.0
+    Boiler: 13.8
+    Fans: 4.25
+    Pumps: 4.25
+    Lighting: 4.5
+
+# High-level scenarios (kept for future extension)
+high_level_scenarios:
   baseline:
     description: "Standard operation - no changes"
     chiller_efficiency_improvement: 0.0
@@ -44,5 +81,3 @@ scenarios:
     chiller_efficiency_improvement: 0.25
     setpoint_adjustment: 2.0
     night_setback: true
-
-# TODO: Eventually use this config file to drive main.py instead of hard-coded values

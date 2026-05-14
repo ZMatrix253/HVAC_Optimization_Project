@@ -1,26 +1,21 @@
 # HVAC System Optimization & Energy Simulation Tool
 
-Python-based tool for modeling annual HVAC energy use, costs, and CO₂ emissions for a commercial building in Ottawa, Canada.
+**Python-based building energy modeling tool** for evaluating annual HVAC energy consumption, costs, and CO₂ emissions for a commercial office building in Ottawa, Canada.
 
-This project explores realistic energy efficiency upgrades using real weather data, part-load equipment behavior, and proper engineering analysis methods.
+This project demonstrates a practical, engineering-driven approach to energy retrofit analysis using real weather data, realistic equipment behavior, and robust decision-support methods.
 
 ![Hourly Energy Consumption](results/hourly_energy.png)
 ![Savings Comparison](results/savings_comparison.png)
 
 ## Key Features
 
-- Real Ottawa TMYx weather data (EPW) with physics-based heating/cooling load calculation
-- Modular HVAC components with realistic **part-load efficiency curves**
-- 6 practical retrofit scenarios (VFDs, high-efficiency chiller, LED lighting, economizer, etc.)
-- Sensitivity analysis, Monte Carlo uncertainty (5,000 runs), and SciPy parametric optimization
-- Automated professional PDF report generation
+- Real Ottawa TMYx weather data (EPW) with physics-based heating, cooling, solar, and internal load calculations
+- Modular HVAC components featuring **realistic part-load efficiency curves**
+- Six practical retrofit scenarios (VFDs, high-efficiency chiller, LED lighting, economizer + DCV, etc.)
+- Advanced analytics: sensitivity analysis, Monte Carlo uncertainty (5,000 runs), and SciPy parametric optimization
+- Automated professional PDF report with executive summary and visualizations
 
-## Technologies
-
-- **Python 3** (NumPy, Pandas, Matplotlib, SciPy)
-- Object-oriented modular design
-
-## Results Summary (Latest Run — May 2026)
+## Results Summary (May 2026 Run)
 
 | Scenario                    | Annual Energy (kWh) | Cost Savings ($) | Energy Savings (kWh) | Savings % | ROI (years) | CO₂ Reduction (t) |
 |-----------------------------|---------------------|------------------|----------------------|-----------|-------------|-------------------|
@@ -32,40 +27,43 @@ This project explores realistic energy efficiency upgrades using real weather da
 | Economizer + DCV            | 605,483             | 3,712            | 30,930               | 4.9%      | 13.5        | 15.5              |
 | **Combined Measures**       | **520,613**         | **13,896**       | **115,800**          | **18.2%** | **3.6**     | **57.9**          |
 
-**Best performer**: The **Combined Measures** scenario achieves **18.2%** energy reduction with a strong **3.6-year** payback.
+**Best performer**: The *Combined Measures* scenario achieves **18.2%** energy reduction with a strong **3.6-year payback**.
 
 ## Model Validation
 
-Validated against real hourly electricity meter data from the **ASHRAE Great Energy Predictor III** dataset.
+Benchmarked against real hourly electricity meter data from the **ASHRAE Great Energy Predictor III** dataset for a comparable office building (~2,500 m²).
 
-- Compared against a similar-sized office building (~2,508 m²)
-- **Annual energy difference: -0.4%**
+- **Annual energy difference**: **-0.4%**
+- Strong agreement for a first-principles physics-based model.
 
-This is an excellent match for a first-principles physics-based model.
+## Technologies
+
+- **Python 3** — NumPy, Pandas, Matplotlib, SciPy
+- Object-oriented modular design with YAML configuration
+- Clean separation between weather processing, component modeling, simulation, analysis, and reporting
 
 ## Advanced Analysis
 
 - Sensitivity analysis on electricity price, investment cost, and climate variations
-- Monte Carlo simulation (5,000 runs) to quantify uncertainty in ROI
-- Parametric optimization using SciPy to find the best combination of upgrades
+- Monte Carlo simulation (5,000 runs) to quantify ROI uncertainty
+- Parametric optimization using SciPy to determine optimal component ratings
 
-### Limitations & Assumptions
+## Limitations & Assumptions
 
-- Simplified single-zone building model (2000 m² archetype) — does not capture multi-zone effects or detailed envelope dynamics.
-- Part-load efficiency curves are representative approximations based on manufacturer data and ASHRAE guidelines, not site-specific curves.
-- Investment costs are high-level order-of-magnitude estimates (±30–50% accuracy).
-- Economic analysis uses simple payback period (no NPV, IRR, or full LCC analysis; does not include maintenance savings, incentives, or escalations).
-- Weather data uses TMYx (typical year) — does not account for climate change or extreme weather years.
-- Ontario grid CO₂ factor is used; actual marginal emissions vary.
+- Simplified single-zone 2000 m² building archetype (does not model detailed envelope dynamics, thermal mass, or multi-zone effects)
+- Part-load efficiency curves are representative approximations based on ASHRAE guidelines and manufacturer data (not site-specific or fully temperature-dependent)
+- Components modeled independently (no plant-level sequencing or system interactions)
+- Simple payback period only (no NPV, IRR, LCC, incentives, or maintenance savings)
+- Investment costs are high-level estimates (±30–50% accuracy)
+- Uses TMYx typical meteorological year (does not account for climate change or extreme weather)
 
+## Future Work
 
-### Future Work
-
-- Full `config.yaml` driven workflow
 - Multi-zone capability and detailed envelope modeling
+- EnergyPlus integration for validation and benchmarking
+- Time-of-use tariffs and demand charge modeling
 - Streamlit interactive dashboard
 - Support for additional climates and building types
-- Time-of-use tariffs and demand charge modeling
 - Expanded validation against more ASHRAE buildings
 
 ## Getting Started
@@ -74,8 +72,8 @@ This is an excellent match for a first-principles physics-based model.
 git clone https://github.com/ZMatrix253/HVAC_Optimization_Project.git
 cd HVAC_Optimization_Project
 
-python3 -m venv venv
-source venv/bin/activate        # macOS / Linux
+python -m venv venv
+source venv/bin/activate          # macOS / Linux
 # On Windows: venv\Scripts\activate
 
 pip install -r requirements.txt

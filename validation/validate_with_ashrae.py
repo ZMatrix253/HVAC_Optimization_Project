@@ -5,6 +5,12 @@
 Validation with ASHRAE GEPIII - Size-Matched Comparison
 """
 
+import sys
+from pathlib import Path
+
+# === Minimal fix for src module ===
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
 import numpy as np
 import pandas as pd
 from pathlib import Path
@@ -42,7 +48,6 @@ metadata = pd.read_csv("data/building_metadata.csv")
 offices = metadata[metadata['primary_use'] == 'Office'].copy()
 
 # Try to find buildings with similar size (your building is ~2000 m²)
-# ASHRAE floor_area is in square feet → convert to m²
 offices['floor_area_m2'] = offices['square_feet'] * 0.092903
 
 # Find buildings between 1500 - 3000 m²

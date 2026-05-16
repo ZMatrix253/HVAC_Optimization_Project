@@ -54,6 +54,7 @@ Benchmarked against real hourly electricity meter data from the **ASHRAE Great E
 - Components modeled independently (no plant-level sequencing or system interactions)
 - Simple payback period only (no NPV, IRR, LCC, incentives, or maintenance savings)
 - Investment costs are high-level estimates (±30–50% accuracy)
+- Retrofit costs are representative conceptual estimates and intended for comparative ranking only.
 - Uses TMYx typical meteorological year (does not account for climate change or extreme weather)
 
 ## Future Work

@@ -31,8 +31,7 @@ This project demonstrates a practical, engineering-driven approach to energy ret
 
 ## Model Validation
 
-Benchmarked against real hourly electricity meter data from the **ASHRAE Great Energy Predictor III** dataset for a comparable office building (~2,500 m²).
-
+Benchmarked against real hourly electricity meter data from the **ASHRAE Great Energy Predictor III** dataset for a comparable office building (~2,500 m²). Results were normalized by floor area and used as a high-level reasonableness check.
 - **Annual energy difference**: **-0.4%**
 - Strong agreement for a first-principles physics-based model.
 

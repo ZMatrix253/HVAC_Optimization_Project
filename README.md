@@ -27,13 +27,13 @@ This project demonstrates a practical, engineering-driven approach to energy ret
 | Economizer + DCV            | 605,483             | 3,712            | 30,930               | 4.9%      | 13.5        | 15.5              |
 | **Combined Measures**       | **520,613**         | **13,896**       | **115,800**          | **18.2%** | **3.6**     | **57.9**          |
 
-**Best performer**: The *Combined Measures* scenario achieves **18.2%** energy reduction with a strong **3.6-year payback**.
+**Best performer**: The *Combined Measures* scenario achieves **18.2%** energy reduction with a strong **3.6-year simple payback** under the modelled assumptions.
 
 ## Model Validation
 
-Benchmarked against real hourly electricity meter data from the **ASHRAE Great Energy Predictor III** dataset for a comparable office building (~2,500 m²). Results were normalized by floor area and used as a high-level reasonableness check.
-- **Annual energy difference**: **-0.4%**
-- Strong agreement for a first-principles physics-based model.
+Benchmarked against real hourly electricity meter data from the **ASHRAE Great Energy Predictor III** dataset for comparable office buildings. Results were compared on an energy-intensity basis (kWh/m²) as a high-level reasonableness check for a simplified first-principles model.
+
+> Note: This is a screening-level comparison only. Differences in climate, fuel mix, operating schedules, and building characteristics limit direct one-to-one accuracy claims.
 
 ## Technologies
 
@@ -49,22 +49,23 @@ Benchmarked against real hourly electricity meter data from the **ASHRAE Great E
 
 ## Limitations & Assumptions
 
-- Simplified single-zone 2000 m² building archetype (does not model detailed envelope dynamics, thermal mass, or multi-zone effects)
+- Simplified single-zone ~2,000 m² building archetype (does not model detailed envelope dynamics, thermal mass, or multi-zone effects)
 - Part-load efficiency curves are representative approximations based on ASHRAE guidelines and manufacturer data (not site-specific or fully temperature-dependent)
 - Components modeled independently (no plant-level sequencing or system interactions)
-- Simple payback period only (no NPV, IRR, LCC, incentives, or maintenance savings)
-- Investment costs are high-level estimates (±30–50% accuracy)
-- Retrofit costs are representative conceptual estimates and intended for comparative ranking only.
+- All energy currently treated as electricity (gas heating is not yet separated)
+- Simple payback period only (no NPV, IRR, life-cycle cost, incentives, or maintenance savings)
+- Investment costs are high-level conceptual estimates (±30–50% accuracy) intended for comparative ranking
 - Uses TMYx typical meteorological year (does not account for climate change or extreme weather)
 
 ## Future Work
 
 - Multi-zone capability and detailed envelope modeling
-- EnergyPlus integration for validation and benchmarking
+- Proper separation of electric and gas end-uses
 - Time-of-use tariffs and demand charge modeling
+- NPV / IRR economic metrics
+- EnergyPlus / OpenStudio export path for higher-fidelity analysis
 - Streamlit interactive dashboard
-- Support for additional climates and building types
-- Expanded validation against more ASHRAE buildings
+- Expanded validation against additional ASHRAE buildings and real utility data
 
 ## Getting Started
 
